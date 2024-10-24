@@ -1,44 +1,48 @@
 <?php
-// Conectar a la base de datos
-$host = 'localhost';
-$user = 'root'; // Cambia si usas otro usuario
-$password = ''; // Cambia si tienes una contraseña
-$dbname = 'registro_usuarios';
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "registro_usuarios";
 
-$conn = new mysqli($host, $user, $password, $dbname);
+// Crear conexión
+$conn = new mysqli($servername, $username, $password, $dbname);
 
+// Verificar conexión
 if ($conn->connect_error) {
-    die("Error de conexión: " . $conn->connect_error);
+    die("Conexión fallida: " . $conn->connect_error);
 }
 
-// Recibir los datos del formulario
-$tipoUsuario = $_POST['tipoUsuario'];
-$nombres = $_POST['nombres'] ?? null;
-$apellidos = $_POST['apellidos'] ?? null;
-$correoElectrónico = $_POST['correoElectrónico'];
-$area = $_POST['area'] ?? null;
-$cargo = $_POST['cargo'] ?? null;
-$nombreEmpresa = $_POST['nombreEmpresa'] ?? null;
-$nit = $_POST['nit'] ?? null;
-$personaCargo = $_POST['personaCargo'] ?? null;
-$identificacion = $_POST['identificacion'] ?? null;
-$telefono = $_POST['telefono'] ?? null;
-$eps = $_POST['eps'] ?? null;
-$arl = $_POST['arl'] ?? null;
-$productoServicio = $_POST['productoServicio'] ?? null;
-$direccion = $_POST['direccion'] ?? null;
-$nombreContacto = $_POST['nombreContacto'] ?? null;
-$contrasena = password_hash($_POST['contrasena'], PASSWORD_DEFAULT); // Encriptar contraseña
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $tipoUsuario = $_POST['tipo_usuario'];
+    $nombres = $_POST['nombres'] ?? '';
+    $apellidos = $_POST['apellidos'] ?? '';
+    $correo = $_POST['correo_electronico'];
+    $contrasena = $_POST['contrasena'];
+    $area = $_POST['area'] ?? '';
+    $cargo = $_POST['cargo'] ?? '';
+    $nombreEmpresa = $_POST['nombre_empresa'] ?? '';
+    $nit = $_POST['nit'] ?? '';
+    $personaAcargo = $_POST['persona_a_cargo'] ?? '';
+    $identificacion = $_POST['identificacion'] ?? '';
+    $telefono = $_POST['telefono'] ?? '';
+    $eps = $_POST['eps'] ?? '';
+    $arl = $_POST['arl'] ?? '';
+    $productoServicio = $_POST['producto_servicio'] ?? '';
+    $direccion = $_POST['direccion'] ?? '';
+    $nombreContacto = $_POST['nombre_contacto'] ?? '';
 
-// Insertar los datos en la tabla
-$sql = "INSERT INTO usuarios (tipo_usuario, nombres, apellidos, correo_electrónico, area, cargo, nombre_empresa, nit, persona_cargo, identificacion, telefono, eps, arl, producto_servicio, direccion, nombre_contacto, contrasena)
-VALUES ('$tipoUsuario', '$nombres', '$apellidos', '$correoElectrónico', '$area', '$cargo', '$nombreEmpresa', '$nit', '$personaCargo', '$identificacion', '$telefono', '$eps', '$arl', '$productoServicio', '$direccion', '$nombreContacto', '$contrasena')";
+    // Consulta SQL para insertar los datos
+    $contrasenaHashed = password_hash($contrasena, PASSWORD_DEFAULT);
 
-if ($conn->query($sql) === TRUE) {
-    echo "Usuario registrado con éxito.";
-} else {
-    echo "Error: " . $conn->error;
+    $sql = "INSERT INTO usuarios (tipo_usuario, nombres, apellidos, correo_electronico, contrasena, area, cargo, nombre_empresa, nit, persona_a_cargo, identificacion, telefono, eps, arl, producto_servicio, direccion, nombre_contacto)
+            VALUES ('$tipoUsuario', '$nombres', '$apellidos', '$correo', '$contrasenaHashed', '$area', '$cargo', '$nombreEmpresa', '$nit', '$personaAcargo', '$identificacion', '$telefono', '$eps', '$arl', '$productoServicio', '$direccion', '$nombreContacto')";
+
+    if ($conn->query($sql) === TRUE) {
+        echo "Usuario registrado con éxito";
+    } else {
+        echo "Error: " . $sql . "<br>" . $conn->error;
+    }
+
+    $conn->close();
 }
-
-$conn->close();
 ?>
